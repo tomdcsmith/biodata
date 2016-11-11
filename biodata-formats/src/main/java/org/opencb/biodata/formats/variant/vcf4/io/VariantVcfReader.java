@@ -76,14 +76,15 @@ public class VariantVcfReader implements VariantReader {
     public boolean pre() {
         try {
             processHeader();
-            
+
             // Copy all the read metadata to the VariantSource object
             // TODO May it be that Vcf4 wasn't necessary anymore?
             source.addMetadata("fileformat", vcf4.getFileFormat());
             source.addMetadata("INFO", vcf4.getInfo().values());
             source.addMetadata("FILTER", vcf4.getFilter().values());
             source.addMetadata("FORMAT", vcf4.getFormat().values());
-            for (Map.Entry<String, String> otherMeta : vcf4.getMetaInformation().entrySet()) {
+            source.addMetadata("ALT", vcf4.getAlternate().values());
+            for (Map.Entry<String, List<String>> otherMeta : vcf4.getMetaInformation().entrySet()) {
                 source.addMetadata(otherMeta.getKey(), otherMeta.getValue());
             }
             source.setSamples(vcf4.getSampleNames());
@@ -158,35 +159,7 @@ public class VariantVcfReader implements VariantReader {
 
     @Override
     public String getHeader() {
-        StringBuilder header = new StringBuilder();
-        header.append("##fileformat=").append(vcf4.getFileFormat()).append("\n");
-
-        Iterator<String> iter = vcf4.getMetaInformation().keySet().iterator();
-        String headerKey;
-        while (iter.hasNext()) {
-            headerKey = iter.next();
-            header.append("##").append(headerKey).append("=").append(vcf4.getMetaInformation().get(headerKey)).append("\n");
-        }
-
-        for (VcfAlternateHeader vcfAlternate : vcf4.getAlternate().values()) {
-            header.append(vcfAlternate.toString()).append("\n");
-        }
-
-        for (VcfFilterHeader vcfFilter : vcf4.getFilter().values()) {
-            header.append(vcfFilter.toString()).append("\n");
-        }
-
-        for (VcfInfoHeader vcfInfo : vcf4.getInfo().values()) {
-            header.append(vcfInfo.toString()).append("\n");
-        }
-
-        for (VcfFormatHeader vcfFormat : vcf4.getFormat().values()) {
-            header.append(vcfFormat.toString()).append("\n");
-        }
-
-        header.append("#").append(Joiner.on("\t").join(vcf4.getHeaderLine())).append("\n");
-
-        return header.toString();
+        return vcf4.buildHeader(new StringBuilder()).toString();
     }
 
     private void processHeader() throws IOException, FileFormatException {
@@ -229,15 +202,15 @@ public class VariantVcfReader implements VariantReader {
 
             } else {
                 String[] fields = line.replace("#", "").split("=", 2);
-                vcf4.getMetaInformation().put(fields[0], fields[1]);
+                vcf4.addMetaInformation(fields[0], fields[1]);
             }
         }
-        
+
         if (!header) {
             System.err.println("VCF Header must be provided.");
             System.exit(-1);
         }
-        
+
         localBufferedReader.close();
     }
 

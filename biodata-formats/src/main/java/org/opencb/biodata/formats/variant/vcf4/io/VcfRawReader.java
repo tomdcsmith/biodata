@@ -158,36 +158,7 @@ public class VcfRawReader implements DataReader<VcfRecord> {
     }
 
     public String getHeader() {
-        StringBuilder header = new StringBuilder();
-        header.append("##fileformat=").append(vcf4.getFileFormat()).append("\n");
-
-        Iterator<String> iter = vcf4.getMetaInformation().keySet().iterator();
-        String headerKey;
-        while (iter.hasNext()) {
-            headerKey = iter.next();
-            header.append("##").append(headerKey).append("=").append(vcf4.getMetaInformation().get(headerKey)).append("\n");
-        }
-
-        for (VcfAlternateHeader vcfAlternate : vcf4.getAlternate().values()) {
-            header.append(vcfAlternate.toString()).append("\n");
-        }
-
-        for (VcfFilterHeader vcfFilter : vcf4.getFilter().values()) {
-            header.append(vcfFilter.toString()).append("\n");
-        }
-
-        for (VcfInfoHeader vcfInfo : vcf4.getInfo().values()) {
-            header.append(vcfInfo.toString()).append("\n");
-        }
-
-        for (VcfFormatHeader vcfFormat : vcf4.getFormat().values()) {
-            header.append(vcfFormat.toString()).append("\n");
-        }
-
-        header.append("#").append(Joiner.on("\t").join(vcf4.getHeaderLine())).append("\n");
-
-
-        return header.toString();
+        return vcf4.buildHeader(new StringBuilder()).toString();
     }
 
     private void processHeader() throws IOException, FileFormatException {
@@ -236,7 +207,7 @@ public class VcfRawReader implements DataReader<VcfRecord> {
                 header |= true;
             } else {
                 fields = line.replace("#", "").split("=", 2);
-                vcf4.getMetaInformation().put(fields[0], fields[1]);
+                vcf4.addMetaInformation(fields[0], fields[1]);
             }
         }
         if (!header) {

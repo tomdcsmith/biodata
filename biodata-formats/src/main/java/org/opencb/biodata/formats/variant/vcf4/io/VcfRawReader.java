@@ -6,7 +6,6 @@
 
 package org.opencb.biodata.formats.variant.vcf4.io;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 
@@ -16,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -189,17 +187,21 @@ public class VcfRawReader implements DataReader<VcfRecord> {
                     throw new FileFormatException("");
                 }
             } else if (line.startsWith("##INFO")) {
-
                 vcfInfo = new VcfInfoHeader(line);
                 vcf4.getInfo().put(vcfInfo.getId(), vcfInfo);
-            } else if (line.startsWith("##FILTER")) {
 
+            } else if (line.startsWith("##FILTER")) {
                 vcfFilter = new VcfFilterHeader(line);
                 vcf4.getFilter().put(vcfFilter.getId(), vcfFilter);
-            } else if (line.startsWith("##FORMAT")) {
 
+            } else if (line.startsWith("##FORMAT")) {
                 vcfFormat = new VcfFormatHeader(line);
                 vcf4.getFormat().put(vcfFormat.getId(), vcfFormat);
+
+            } else if (line.startsWith("##ALT")) {
+                VcfAlternateHeader vcfAlternateHeader = new VcfAlternateHeader(line);
+                vcf4.getAlternate().put(vcfAlternateHeader.getId(), vcfAlternateHeader);
+
             } else if (line.startsWith("#CHROM")) {
 //                headerLine = StringUtils.toList(line.replace("#", ""), "\t");
                 headerLine = Splitter.on("\t").splitToList(line.replace("#", ""));

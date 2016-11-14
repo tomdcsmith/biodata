@@ -1,18 +1,19 @@
 package org.opencb.biodata.formats.variant.vcf4.io;
 
-import com.google.common.base.Joiner;
 import org.junit.Test;
 import org.opencb.biodata.formats.variant.io.VariantReader;
+import org.opencb.biodata.formats.variant.vcf4.VcfAlternateHeader;
+import org.opencb.biodata.formats.variant.vcf4.VcfFilterHeader;
+import org.opencb.biodata.formats.variant.vcf4.VcfFormatHeader;
+import org.opencb.biodata.formats.variant.vcf4.VcfInfoHeader;
 import org.opencb.biodata.models.variant.Variant;
 import org.opencb.biodata.models.variant.VariantSource;
-import org.opencb.biodata.models.variant.VariantVcfFactory;
+import org.opencb.biodata.models.variant.VariantVcfEVSFactory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.NoSuchFileException;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -20,9 +21,9 @@ import java.util.TreeSet;
 import java.util.zip.GZIPInputStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import org.opencb.biodata.models.variant.VariantVcfEVSFactory;
 
 public class VariantVcfReaderTest {
 
@@ -91,6 +92,20 @@ public class VariantVcfReaderTest {
         assertTrue(reader.close());
 
         assertNotNull(source.getMetadata().get("contig"));
+        assertFalse(((Collection)source.getMetadata().get("contig")).isEmpty());
+        assertTrue(((Collection)source.getMetadata().get("contig")).iterator().next() instanceof String);
+        assertNotNull(source.getMetadata().get("FILTER"));
+        assertFalse(((Collection)source.getMetadata().get("FILTER")).isEmpty());
+        assertTrue(((Collection)source.getMetadata().get("FILTER")).iterator().next() instanceof VcfFilterHeader);
+        assertNotNull(source.getMetadata().get("ALT"));
+        assertFalse(((Collection)source.getMetadata().get("ALT")).isEmpty());
+        assertTrue(((Collection)source.getMetadata().get("ALT")).iterator().next() instanceof VcfAlternateHeader);
+        assertNotNull(source.getMetadata().get("FORMAT"));
+        assertFalse(((Collection)source.getMetadata().get("FORMAT")).isEmpty());
+        assertTrue(((Collection)source.getMetadata().get("FORMAT")).iterator().next() instanceof VcfFormatHeader);
+        assertNotNull(source.getMetadata().get("INFO"));
+        assertFalse(((Collection)source.getMetadata().get("INFO")).isEmpty());
+        assertTrue(((Collection)source.getMetadata().get("INFO")).iterator().next() instanceof VcfInfoHeader);
     }
 
     /**
@@ -112,8 +127,11 @@ public class VariantVcfReaderTest {
         assertTrue(reader.post());
         assertTrue(reader.close());
 
-        assertNotNull(source.getMetadata().get("contig"));
+        Set<String> actualLines = new TreeSet<>();
+        String[] split = reader.getHeader().split("\n");
+        Collections.addAll(actualLines, split);
 
+        // get the expected header to compare at the end
         BufferedReader bufferedReader = new BufferedReader(
                 new InputStreamReader(new GZIPInputStream(new FileInputStream(inputFile))));
 
@@ -126,10 +144,7 @@ public class VariantVcfReaderTest {
             expectedLines.add(line);
         }
 
-        Set<String> actualLines = new TreeSet<>();
-        String[] split = reader.getHeader().split("\n");
-        Collections.addAll(actualLines, split);
-
+        // finally do the comparison
         assertEquals(expectedLines, actualLines);
     }
 

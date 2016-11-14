@@ -1,6 +1,5 @@
 package org.opencb.biodata.formats.variant.vcf4.io;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import org.opencb.biodata.formats.io.FileFormatException;
 import org.opencb.biodata.formats.variant.io.VariantReader;
@@ -17,7 +16,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -193,6 +191,10 @@ public class VariantVcfReader implements VariantReader {
             } else if (line.startsWith("##FORMAT")) {
                 VcfFormatHeader vcfFormat = new VcfFormatHeader(line);
                 vcf4.getFormat().put(vcfFormat.getId(), vcfFormat);
+
+            } else if (line.startsWith("##ALT")) {
+                VcfAlternateHeader vcfAlternateHeader = new VcfAlternateHeader(line);
+                vcf4.getAlternate().put(vcfAlternateHeader.getId(), vcfAlternateHeader  );
 
             } else if (line.startsWith("#CHROM")) {
 //               List<String>  headerLine = StringUtils.toList(line.replace("#", ""), "\t");

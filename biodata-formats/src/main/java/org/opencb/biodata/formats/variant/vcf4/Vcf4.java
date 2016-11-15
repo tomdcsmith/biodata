@@ -81,7 +81,7 @@ public class Vcf4 {
         StringBuilder stringBuilder = new StringBuilder();
 
         // metadata and header
-        buildHeader(stringBuilder);
+        stringBuilder.append(buildHeader());
 
         // data lines
         for (VcfRecord vcfRecord : records) {
@@ -91,7 +91,9 @@ public class Vcf4 {
         return stringBuilder.toString().trim();
     }
 
-    public StringBuilder buildHeader(StringBuilder header) {
+    public StringBuilder buildHeader() {
+        StringBuilder header = new StringBuilder();
+
         header.append("##fileformat=").append(fileFormat).append("\n");
 
         for (Map.Entry<String, List<String>> fieldEntry : metaInformation.entrySet()) {

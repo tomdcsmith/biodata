@@ -157,7 +157,7 @@ public class VariantVcfReader implements VariantReader {
 
     @Override
     public String getHeader() {
-        return vcf4.buildHeader(new StringBuilder()).toString();
+        return vcf4.buildHeader().toString();
     }
 
     private void processHeader() throws IOException, FileFormatException {

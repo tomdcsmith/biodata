@@ -39,15 +39,12 @@ public class VariantVcfReaderTest {
         assertTrue(reader.open());
         assertTrue(reader.pre());
 
-        int i = 0;
-        do {
-            variants = reader.read();
-            if(variants != null){
-                i+=variants.size();
-            }
-        } while (variants != null);
+        int count = 0;
+        while ((variants = reader.read()) != null) {
+            count += variants.size();
+        }
 
-        assertEquals(i, 999);
+        assertEquals(count, 999);
 
         assertTrue(reader.post());
         assertTrue(reader.close());
@@ -65,15 +62,12 @@ public class VariantVcfReaderTest {
         assertTrue(reader.open());
         assertTrue(reader.pre());
 
-        int i = 0;
-        do {
-            variants = reader.read();
-            if(variants != null){
-                i+=variants.size();
-            }
-        } while (variants != null);
+        int count = 0;
+        while ((variants = reader.read()) != null) {
+            count += variants.size();
+        }
 
-        assertEquals(753, i);
+        assertEquals(753, count);
 
         assertTrue(reader.post());
         assertTrue(reader.close());
@@ -116,7 +110,6 @@ public class VariantVcfReaderTest {
      */
     @Test
     public void testVcf4ToString() throws Exception {
-
         String inputFile = getClass().getResource("/variant-test-file-4.1.vcf.gz").getFile();
         VariantSource source = new VariantSource(inputFile, "test", "test", "Test file");
 
@@ -160,15 +153,12 @@ public class VariantVcfReaderTest {
         assertTrue(reader.open());
         assertTrue(reader.pre());
 
-        int i = 0;
-        do {
-            variants = reader.read();
-            if(variants != null){
-                i+=variants.size();
-            }
-        } while (variants != null);
+        int count = 0;
+        while ((variants = reader.read()) != null) {
+            count += variants.size();
+        }
 
-        assertEquals(i, 1000);
+        assertEquals(count, 1000);
 
         assertTrue(reader.post());
         assertTrue(reader.close());

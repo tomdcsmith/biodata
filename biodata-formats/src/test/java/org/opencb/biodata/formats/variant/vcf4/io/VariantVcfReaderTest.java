@@ -85,21 +85,18 @@ public class VariantVcfReaderTest {
         assertTrue(reader.post());
         assertTrue(reader.close());
 
-        assertNotNull(source.getMetadata().get("contig"));
-        assertFalse(((Collection)source.getMetadata().get("contig")).isEmpty());
-        assertTrue(((Collection)source.getMetadata().get("contig")).iterator().next() instanceof String);
-        assertNotNull(source.getMetadata().get("FILTER"));
-        assertFalse(((Collection)source.getMetadata().get("FILTER")).isEmpty());
-        assertTrue(((Collection)source.getMetadata().get("FILTER")).iterator().next() instanceof VcfFilterHeader);
-        assertNotNull(source.getMetadata().get("ALT"));
-        assertFalse(((Collection)source.getMetadata().get("ALT")).isEmpty());
-        assertTrue(((Collection)source.getMetadata().get("ALT")).iterator().next() instanceof VcfAlternateHeader);
-        assertNotNull(source.getMetadata().get("FORMAT"));
-        assertFalse(((Collection)source.getMetadata().get("FORMAT")).isEmpty());
-        assertTrue(((Collection)source.getMetadata().get("FORMAT")).iterator().next() instanceof VcfFormatHeader);
-        assertNotNull(source.getMetadata().get("INFO"));
-        assertFalse(((Collection)source.getMetadata().get("INFO")).isEmpty());
-        assertTrue(((Collection)source.getMetadata().get("INFO")).iterator().next() instanceof VcfInfoHeader);
+        checkTypeAndAmount(source, "contig", String.class, 86);
+        checkTypeAndAmount(source, "FILTER", VcfFilterHeader.class, 1);
+        checkTypeAndAmount(source, "ALT", VcfAlternateHeader.class, 133);
+        checkTypeAndAmount(source, "FORMAT", VcfFormatHeader.class, 1);
+        checkTypeAndAmount(source, "INFO", VcfInfoHeader.class, 27);
+    }
+
+    private <T> void checkTypeAndAmount(VariantSource source, String key, Class<T> clazz, int expectedAmount) {
+        assertNotNull(source.getMetadata().get(key));
+        assertFalse(((Collection)source.getMetadata().get(key)).isEmpty());
+        assertTrue(clazz.isInstance(((Collection)source.getMetadata().get(key)).iterator().next()));
+        assertEquals(expectedAmount, ((Collection)source.getMetadata().get(key)).size());
     }
 
     /**

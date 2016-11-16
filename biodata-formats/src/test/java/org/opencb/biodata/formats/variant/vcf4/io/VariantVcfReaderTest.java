@@ -87,18 +87,18 @@ public class VariantVcfReaderTest {
         assertTrue(reader.post());
         assertTrue(reader.close());
 
-        checkTypeAndAmount(source, "contig", String.class, 86);
-        checkTypeAndAmount(source, "FILTER", VcfFilterHeader.class, 1);
-        checkTypeAndAmount(source, "ALT", VcfAlternateHeader.class, 133);
-        checkTypeAndAmount(source, "FORMAT", VcfFormatHeader.class, 1);
-        checkTypeAndAmount(source, "INFO", VcfInfoHeader.class, 27);
+        checkTypeAndNumber(source, "contig", String.class, 86);
+        checkTypeAndNumber(source, "FILTER", VcfFilterHeader.class, 1);
+        checkTypeAndNumber(source, "ALT", VcfAlternateHeader.class, 133);
+        checkTypeAndNumber(source, "FORMAT", VcfFormatHeader.class, 1);
+        checkTypeAndNumber(source, "INFO", VcfInfoHeader.class, 27);
     }
 
-    private <T> void checkTypeAndAmount(VariantSource source, String key, Class<T> clazz, int expectedAmount) {
+    private <T> void checkTypeAndNumber(VariantSource source, String key, Class<T> clazz, int expectedNumber) {
         assertNotNull(source.getMetadata().get(key));
         assertFalse(((Collection) source.getMetadata().get(key)).isEmpty());
         assertTrue(clazz.isInstance(((Collection) source.getMetadata().get(key)).iterator().next()));
-        assertEquals(expectedAmount, ((Collection) source.getMetadata().get(key)).size());
+        assertEquals(expectedNumber, ((Collection) source.getMetadata().get(key)).size());
     }
 
     @Test

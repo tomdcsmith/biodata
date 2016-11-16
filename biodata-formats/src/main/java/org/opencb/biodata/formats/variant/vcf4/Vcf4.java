@@ -9,7 +9,7 @@ import java.util.*;
 public class Vcf4 {
 
     private String fileFormat;
-    private Map<String, String> metaInformation;
+    private Map<String, List<String>> metaInformation;
     private Map<String, VcfAlternateHeader> alternate;
     private Map<String, VcfFilterHeader> filter;
     private Map<String, VcfInfoHeader> info;
@@ -38,11 +38,14 @@ public class Vcf4 {
         sampleNames = new ArrayList<>(100);
     }
 
-    public void addMetaInfo(String key, String value) {
+    public void addMetaInformation(String key, String value) {
         if (metaInformation == null) {
             metaInformation = new HashMap<>();
         }
-        metaInformation.put(key, value);
+        if (!metaInformation.containsKey(key)) {
+            metaInformation.put(key, new ArrayList<String>());
+        }
+        metaInformation.get(key).add(value);
     }
 
     public void addAlternate(String id, String description) {
@@ -76,37 +79,48 @@ public class Vcf4 {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("##fileformat=").append(fileFormat).append("\n");
-        // print metaInformation
-        Iterator<String> iter = metaInformation.keySet().iterator();
-        String headerKey;
-        while (iter.hasNext()) {
-            headerKey = iter.next();
-            stringBuilder.append("##").append(headerKey).append("=").append(metaInformation.get(headerKey)).append("\n");
-        }
 
-        for (VcfAlternateHeader vcfAlternateHeader : alternate.values()) {
-            stringBuilder.append(vcfAlternateHeader.toString()).append("\n");
-        }
+        // metadata and header
+        stringBuilder.append(buildHeader());
 
-        for (VcfFilterHeader vcfFilterHeader : filter.values()) {
-            stringBuilder.append(vcfFilterHeader.toString()).append("\n");
-        }
-
-        for (VcfInfoHeader vcfInfoHeader : info.values()) {
-            stringBuilder.append(vcfInfoHeader.toString()).append("\n");
-        }
-
-        for (VcfFormatHeader vcfFormatHeader : format.values()) {
-            stringBuilder.append(vcfFormatHeader.toString()).append("\n");
-        }
-
-        // header and data lines
-        stringBuilder.append("#").append(Joiner.on("\t").join(headerLine, "\t")).append("\n");
+        // data lines
         for (VcfRecord vcfRecord : records) {
             stringBuilder.append(vcfRecord.toString()).append("\n");
         }
+
         return stringBuilder.toString().trim();
+    }
+
+    public StringBuilder buildHeader() {
+        StringBuilder header = new StringBuilder();
+
+        header.append("##fileformat=").append(fileFormat).append("\n");
+
+        for (Map.Entry<String, List<String>> fieldEntry : metaInformation.entrySet()) {
+            for (String value : fieldEntry.getValue()) {
+                header.append("##").append(fieldEntry.getKey()).append("=").append(value).append("\n");
+            }
+        }
+
+        for (VcfAlternateHeader vcfAlternateHeader : alternate.values()) {
+            header.append(vcfAlternateHeader.toString()).append("\n");
+        }
+
+        for (VcfFilterHeader vcfFilterHeader : filter.values()) {
+            header.append(vcfFilterHeader.toString()).append("\n");
+        }
+
+        for (VcfInfoHeader vcfInfoHeader : info.values()) {
+            header.append(vcfInfoHeader.toString()).append("\n");
+        }
+
+        for (VcfFormatHeader vcfFormatHeader : format.values()) {
+            header.append(vcfFormatHeader.toString()).append("\n");
+        }
+
+        header.append("#").append(Joiner.on("\t").join(headerLine)).append("\n");
+
+        return header;
     }
 
     /**
@@ -126,14 +140,14 @@ public class Vcf4 {
     /**
      * @return the metaInformation
      */
-    public Map<String, String> getMetaInformation() {
+    public Map<String, List<String>> getMetaInformation() {
         return metaInformation;
     }
 
     /**
      * @param metaInformation the metaInformation to set
      */
-    public void setMetaInformation(Map<String, String> metaInformation) {
+    public void setMetaInformation(Map<String, List<String>> metaInformation) {
         this.metaInformation = metaInformation;
     }
 

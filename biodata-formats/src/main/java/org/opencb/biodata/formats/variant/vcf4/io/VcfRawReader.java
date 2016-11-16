@@ -6,7 +6,6 @@
 
 package org.opencb.biodata.formats.variant.vcf4.io;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Splitter;
 
@@ -16,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -158,36 +156,7 @@ public class VcfRawReader implements DataReader<VcfRecord> {
     }
 
     public String getHeader() {
-        StringBuilder header = new StringBuilder();
-        header.append("##fileformat=").append(vcf4.getFileFormat()).append("\n");
-
-        Iterator<String> iter = vcf4.getMetaInformation().keySet().iterator();
-        String headerKey;
-        while (iter.hasNext()) {
-            headerKey = iter.next();
-            header.append("##").append(headerKey).append("=").append(vcf4.getMetaInformation().get(headerKey)).append("\n");
-        }
-
-        for (VcfAlternateHeader vcfAlternate : vcf4.getAlternate().values()) {
-            header.append(vcfAlternate.toString()).append("\n");
-        }
-
-        for (VcfFilterHeader vcfFilter : vcf4.getFilter().values()) {
-            header.append(vcfFilter.toString()).append("\n");
-        }
-
-        for (VcfInfoHeader vcfInfo : vcf4.getInfo().values()) {
-            header.append(vcfInfo.toString()).append("\n");
-        }
-
-        for (VcfFormatHeader vcfFormat : vcf4.getFormat().values()) {
-            header.append(vcfFormat.toString()).append("\n");
-        }
-
-        header.append("#").append(Joiner.on("\t").join(vcf4.getHeaderLine())).append("\n");
-
-
-        return header.toString();
+        return vcf4.buildHeader().toString();
     }
 
     private void processHeader() throws IOException, FileFormatException {
@@ -218,17 +187,21 @@ public class VcfRawReader implements DataReader<VcfRecord> {
                     throw new FileFormatException("");
                 }
             } else if (line.startsWith("##INFO")) {
-
                 vcfInfo = new VcfInfoHeader(line);
                 vcf4.getInfo().put(vcfInfo.getId(), vcfInfo);
-            } else if (line.startsWith("##FILTER")) {
 
+            } else if (line.startsWith("##FILTER")) {
                 vcfFilter = new VcfFilterHeader(line);
                 vcf4.getFilter().put(vcfFilter.getId(), vcfFilter);
-            } else if (line.startsWith("##FORMAT")) {
 
+            } else if (line.startsWith("##FORMAT")) {
                 vcfFormat = new VcfFormatHeader(line);
                 vcf4.getFormat().put(vcfFormat.getId(), vcfFormat);
+
+            } else if (line.startsWith("##ALT")) {
+                VcfAlternateHeader vcfAlternateHeader = new VcfAlternateHeader(line);
+                vcf4.getAlternate().put(vcfAlternateHeader.getId(), vcfAlternateHeader);
+
             } else if (line.startsWith("#CHROM")) {
 //                headerLine = StringUtils.toList(line.replace("#", ""), "\t");
                 headerLine = Splitter.on("\t").splitToList(line.replace("#", ""));
@@ -236,12 +209,11 @@ public class VcfRawReader implements DataReader<VcfRecord> {
                 header |= true;
             } else {
                 fields = line.replace("#", "").split("=", 2);
-                vcf4.getMetaInformation().put(fields[0], fields[1]);
+                vcf4.addMetaInformation(fields[0], fields[1]);
             }
         }
         if (!header) {
-            System.err.println("VCF Header must be provided.");
-            System.exit(-1);
+            throw new IOException("VCF lacks a header line (the one starting with \"#CHROM\")");
         }
         localBufferedReader.close();
     }

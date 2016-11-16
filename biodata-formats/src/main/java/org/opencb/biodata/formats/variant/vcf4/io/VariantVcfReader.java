@@ -209,8 +209,7 @@ public class VariantVcfReader implements VariantReader {
         }
 
         if (!header) {
-            System.err.println("VCF Header must be provided.");
-            System.exit(-1);
+            throw new IOException("VCF lacks a header line (the one starting with \"#CHROM\")");
         }
 
         localBufferedReader.close();

@@ -11,7 +11,9 @@ import org.opencb.biodata.models.variant.VariantSource;
 import org.opencb.biodata.models.variant.VariantVcfEVSFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,7 +33,7 @@ public class VariantVcfReaderTest {
     public void readFile() {
         String inputFile = getClass().getResource("/variant-test-file.vcf.gz").getFile();
         VariantSource source = new VariantSource(inputFile, "test", "test", "Test file");
-    
+
         VariantReader reader = new VariantVcfReader(source, inputFile);
 
         List<Variant> variants;
@@ -94,15 +96,31 @@ public class VariantVcfReaderTest {
 
     private <T> void checkTypeAndAmount(VariantSource source, String key, Class<T> clazz, int expectedAmount) {
         assertNotNull(source.getMetadata().get(key));
-        assertFalse(((Collection)source.getMetadata().get(key)).isEmpty());
-        assertTrue(clazz.isInstance(((Collection)source.getMetadata().get(key)).iterator().next()));
-        assertEquals(expectedAmount, ((Collection)source.getMetadata().get(key)).size());
+        assertFalse(((Collection) source.getMetadata().get(key)).isEmpty());
+        assertTrue(clazz.isInstance(((Collection) source.getMetadata().get(key)).iterator().next()));
+        assertEquals(expectedAmount, ((Collection) source.getMetadata().get(key)).size());
+    }
+
+    @Test
+    public void testInvalidHeader() throws Exception {
+        File tempFile = File.createTempFile("biodata.testInvalidHeader", ".vcf");
+        tempFile.deleteOnExit();
+        FileWriter writer = new FileWriter(tempFile);
+        writer.write("this is an invalid line for a VCF");
+
+        VariantSource source = new VariantSource(tempFile.getPath(), "test", "test", "Test file");
+
+        VariantReader reader = new VariantVcfReader(source, tempFile.getPath());
+
+        assertTrue(reader.open());
+        assertFalse(reader.pre());
     }
 
     /**
      * Use the reader to get the header of a VCF, and then manually compare it with the actual header. Use a set to
      * sort the lines, because the reader will change the order: first the unrecognized metadata lines, then
      * ALT, FILTER, INFO, FORMAT, and last the header line (#CHROM...).
+     *
      * @throws Exception
      */
     @Test
@@ -142,7 +160,7 @@ public class VariantVcfReaderTest {
     public void readAggregatedFile() {
         String inputFile = getClass().getResource("/evs.vcf.gz").getFile();
         VariantSource source = new VariantSource(inputFile, "evs", "evs", "Exome Variant Server");
-        
+
         VariantReader reader = new VariantVcfReader(source, inputFile, new VariantVcfEVSFactory());
 
         List<Variant> variants;

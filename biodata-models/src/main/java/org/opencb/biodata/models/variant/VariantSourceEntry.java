@@ -211,10 +211,10 @@ public class VariantSourceEntry {
         if (!Objects.equals(this.format, other.format)) {
             return false;
         }
-        if (!Objects.equals(this.samplesData, other.samplesData)) {
+        if (!this.samplesData.equals(other.samplesData)) {
             return false;
         }
-        if (!Objects.equals(this.attributes, other.attributes)) {
+        if (!this.attributes.equals(other.attributes)) {
             return false;
         }
         return true;

@@ -6,13 +6,12 @@
     <parent>
         <groupId>org.opencb.biodata</groupId>
         <artifactId>biodata</artifactId>
-        <version>0.4.5</version>
+        <version>0.4.6</version>
         <relativePath>..</relativePath>
     </parent>
 
     <groupId>org.opencb.biodata</groupId>
     <artifactId>biodata-models</artifactId>
-    <version>${biodata.version}</version>
 
     <name>models</name>
     <url>http://maven.apache.org</url>

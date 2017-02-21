@@ -1,7 +1,6 @@
 package org.opencb.biodata.formats.variant.vcf4;
 
 public class VcfFormatHeader {
-
     private String id;
     private String number;
 
@@ -11,6 +10,9 @@ public class VcfFormatHeader {
 
     private Type type;
     private String description;
+
+    public VcfFormatHeader() {
+    }
 
     public VcfFormatHeader(String foramtLine) {
         // ##FORMAT=<ID=GQ,Number=1,Type=Float,Description="Genotype Quality">

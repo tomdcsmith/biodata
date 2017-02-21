@@ -4,6 +4,9 @@ public class VcfAlternateHeader {
     private String id;
     private String description;
 
+    public VcfAlternateHeader() {
+    }
+
     public VcfAlternateHeader(String filterLine) {
         // ##ALT=<ID=q10,Description="Variants that not pass quality 10">
         String[] fields = filterLine.replaceAll("[\"<>]", "").split("=");

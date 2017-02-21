@@ -4,6 +4,9 @@ public class VcfFilterHeader {
     private String id;
     private String description;
 
+    public VcfFilterHeader() {
+    }
+
     public VcfFilterHeader(String filterLine) {
         // ##FILTER=<ID=q10,Description="Variants that not pass quality 10">
         String[] fields = filterLine.replaceAll("[\"<>]", "").split("=");

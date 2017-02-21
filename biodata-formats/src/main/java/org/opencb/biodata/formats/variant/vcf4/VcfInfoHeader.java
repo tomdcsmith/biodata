@@ -10,6 +10,9 @@ public class VcfInfoHeader {
 
     private enum Type {Integer, Float, Flag, Character, String};
 
+    public VcfInfoHeader() {
+    }
+
     public VcfInfoHeader(String infoLine) {
         // ##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
         String[] fields = infoLine.replaceAll("[\"]", "").split("=", 6);

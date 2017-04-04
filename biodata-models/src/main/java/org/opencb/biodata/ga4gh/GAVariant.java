@@ -77,6 +77,8 @@ public class GAVariant {
      */
     private GACall[] calls;
 
+    public GAVariant() {
+    }
 
     public GAVariant(String id) {
         this.id = id;

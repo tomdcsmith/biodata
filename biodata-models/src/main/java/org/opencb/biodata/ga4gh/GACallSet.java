@@ -46,7 +46,9 @@ public class GACallSet {
      */
     private Map<String, List> info;
 
-    
+    GACallSet() {
+    }
+
     public GACallSet(String id, String sampleId) {
         this(id, null, sampleId, null, 0, 0, null);
     }

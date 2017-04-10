@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.opencb.biodata</groupId>
+        <groupId>uk.ac.ebi.eva</groupId>
         <artifactId>biodata</artifactId>
         <version>0.4.6</version>
         <relativePath>..</relativePath>
     </parent>
 
-    <groupId>org.opencb.biodata</groupId>
+    <groupId>uk.ac.ebi.eva</groupId>
     <artifactId>biodata-models</artifactId>
 
     <name>models</name>

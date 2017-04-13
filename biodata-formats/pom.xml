@@ -6,7 +6,7 @@
     <parent>
         <groupId>uk.ac.ebi.eva</groupId>
         <artifactId>biodata</artifactId>
-        <version>0.4.6</version>
+        <version>0.4.7</version>
         <relativePath>..</relativePath>
     </parent>
 

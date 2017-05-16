@@ -8,6 +8,9 @@ public class Xref {
     private String id;
     private String src;
 
+    public Xref() {
+    }
+
     public Xref(String id, String src) {
         this.id = id;
         this.src = src;
